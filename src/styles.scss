@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  list-style-type: none;
+  outline: none;
+  border: none;
+  font-family: 'Arial', serif;
+}
+
+input,
+button {
+  font-size: 14px;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 5px;
+}
