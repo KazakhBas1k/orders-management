@@ -1,0 +1,14 @@
+<div class="toast_container">
+  @for (toast of toastService.toasts(); track toast.id) {
+    <div
+      class="toast_item"
+      [style]="{
+        borderColor: toast.type === 'error' ? 'red' : 'grey',
+        color: toast.type === 'error' ? 'red' : 'grey',
+      }"
+    >
+      <h4>{{ toast.title }}</h4>
+      <p>{{ toast.message }}</p>
+    </div>
+  }
+</div>

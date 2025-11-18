@@ -9,9 +9,8 @@ import { token_cookie } from '../constants';
 export class AuthService {
   private readonly cookiesService: CookieService = inject(CookieService);
 
-  public login(body: Login): string {
+  public login(body: Login): void {
     const token: number = Math.random();
     this.cookiesService.set(token_cookie, `${token}`);
-    return body.email;
   }
 }

@@ -3,6 +3,6 @@
   <form [formGroup]="form">
     <input type="email" placeholder="Email" formControlName="email" />
     <input type="password" placeholder="Пароль" formControlName="password" />
-    <button (click)="login()" [disabled]="form.invalid">Войти</button>
+    <button (click)="login()">Войти</button>
   </form>
 </div>
