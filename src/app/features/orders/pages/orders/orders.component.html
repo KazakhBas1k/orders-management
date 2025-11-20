@@ -1,1 +1,36 @@
-<p>orders works!</p>
+<h1>Заказы</h1>
+@if (filterForm) {
+  <form [formGroup]="filterForm">
+    <select formControlName="status">
+      <option value="" selected>Статус</option>
+      <option value="new">Новый</option>
+      <option value="processing">В процессе</option>
+    </select>
+    <input type="text" placeholder="Клиент" formControlName="customerName" />
+    <button (click)="getList()">Найти</button>
+  </form>
+}
+<table>
+  <tr>
+    <th>Номер</th>
+    <th>Клиент</th>
+    <th>Статус</th>
+    <th>Вещи</th>
+    <th>Итого</th>
+    <th>Дата</th>
+  </tr>
+  @for (order of orders(); track order.id) {
+    <tr class="order" (click)="openInfo(order.id)">
+      <td>{{ order.number }}</td>
+      <td>{{ order.customerName }}</td>
+      <td>{{ order.status === 'new' ? 'Новый' : 'В процессе' }}</td>
+      <td>
+        @for (item of order.items; track item.productId) {
+          <p>{{ getProductTitle(item.productId) }} {{ item.qty }} шт - {{ item.price }} тг</p>
+        }
+      </td>
+      <td>{{ order.total }} тг</td>
+      <td>{{ order.createdAt | date: 'MM.dd.yyyy HH:mm' }}</td>
+    </tr>
+  }
+</table>

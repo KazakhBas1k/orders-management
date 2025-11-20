@@ -1,0 +1,36 @@
+<h1>Заказ</h1>
+@if (orderInfo()) {
+  <form [formGroup]="orderForm">
+    <input type="text" placeholder="Номер" formControlName="number" />
+    <input type="text" placeholder="Клиент" formControlName="customerName" />
+    <select formControlName="status">
+      <option value="" selected>Статус</option>
+      <option value="new">Новый</option>
+      <option value="processing">В процессе</option>
+    </select>
+
+    <input type="text" placeholder="Итого" formControlName="total" readonly />
+    <button (click)="save()">Сохранить</button>
+    <button (click)="delete()">Удалить</button>
+  </form>
+  <div class="product_container">
+    <form [formGroup]="itemForm" class="add">
+      <select formControlName="productId" [(ngModel)]="productId">
+        <option value="">Товар</option>
+        @for (product of products(); track product.id) {
+          <option [value]="product.id">{{ product.title }} {{ product.price }} тг</option>
+        }
+      </select>
+      <input formControlName="qty" type="number" style="width: 50px" [(ngModel)]="qty" /> шт
+      <button (click)="addItem()">Добавить вешь</button>
+    </form>
+    @for (item of items(); track item.productId) {
+      <div class="product">
+        <p>{{ getProductNameById(item.productId) }}</p>
+        <p>{{ item.qty }} шт</p>
+        <p>{{ item.price }}</p>
+        <button (click)="removeItem(item.productId)">Убрать</button>
+      </div>
+    }
+  </div>
+}

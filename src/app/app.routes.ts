@@ -6,8 +6,7 @@ export const routes: Routes = [
   {
     path: '',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('@features/orders/pages/orders/orders.component').then((c) => c.OrdersComponent),
+    loadChildren: () => import('./features/orders.route').then((r) => r.orders_route),
   },
   {
     path: login_page,

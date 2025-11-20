@@ -1,0 +1,13 @@
+.order {
+  cursor: pointer;
+}
+
+.order:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+form {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
