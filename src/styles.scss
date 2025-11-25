@@ -9,6 +9,12 @@
   font-family: 'Arial', serif;
 }
 
+body {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
 input,
 button,
 select {
