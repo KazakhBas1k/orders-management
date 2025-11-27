@@ -9,12 +9,6 @@
   font-family: 'Arial', serif;
 }
 
-body {
-  display: grid;
-  place-items: center;
-  min-height: 100vh;
-}
-
 input,
 button,
 select {
@@ -35,4 +29,8 @@ td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
+}
+
+h1 {
+  margin-bottom: 20px;
 }

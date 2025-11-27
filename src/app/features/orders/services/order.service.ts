@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Order, OrderFilter, OrderSort, Product } from '@features/orders/models/order';
-import { firstValueFrom, map } from 'rxjs';
+import { firstValueFrom, forkJoin, map } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class OrderService {
@@ -14,7 +14,7 @@ export class OrderService {
     sort: OrderSort,
     pageSize: number,
     pageNum: number,
-  ): Promise<Order[]> {
+  ): Promise<[Order[], number]> {
     let params: HttpParams = new HttpParams({
       fromObject: { _page: pageNum, _limit: pageSize },
     });
@@ -32,7 +32,14 @@ export class OrderService {
       params = params.append('_sort', 'total');
       params = params.append('_order', sort.total);
     }
-    return await firstValueFrom(this.http.get<Order[]>(`${this._urlPrefix}/orders`, { params }));
+    return await firstValueFrom(
+      forkJoin([
+        this.http.get<Order[]>(`${this._urlPrefix}/orders`, { params }),
+        this.http
+          .get<Order[]>(`${this._urlPrefix}/orders`)
+          .pipe(map((orders: Order[]): number => orders.length)),
+      ]),
+    );
   }
 
   public async getProductById(id: number): Promise<Product> {
@@ -57,6 +64,10 @@ export class OrderService {
         .get<Order[]>(`${this._urlPrefix}/orders`, { params })
         .pipe(map((orders: Order[]): Order => orders[0])),
     );
+  }
+
+  public async create(body: Order): Promise<void> {
+    return await firstValueFrom(this.http.post<void>(`${this._urlPrefix}/orders`, body));
   }
 
   public async update(id: number, order: Order): Promise<void> {

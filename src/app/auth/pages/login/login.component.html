@@ -1,8 +1,38 @@
 <div class="login_container">
   <h1>Вход</h1>
   <form [formGroup]="form">
-    <input type="email" placeholder="Email" formControlName="email" />
-    <input type="password" placeholder="Пароль" formControlName="password" />
-    <button (click)="login()">Войти</button>
+    <p-floatlabel variant="on">
+      <input
+        pInputText
+        type="email"
+        formControlName="email"
+        id="email"
+        [invalid]="form.get('email')?.invalid && form.get('email')?.touched"
+        style="width: 275px"
+      />
+      <label for="email">Email</label>
+    </p-floatlabel>
+    @if (form.get('email')?.invalid && form.get('email')?.touched) {
+      <p-message severity="error" variant="simple" size="small">{{
+        getErrorMessage(form.get('email'))
+      }}</p-message>
+    }
+    <p-floatlabel variant="on">
+      <input
+        pInputText
+        type="password"
+        formControlName="password"
+        id="password"
+        [invalid]="form.get('password')?.invalid && form.get('password')?.touched"
+        style="width: 275px"
+      />
+      <label for="password">Пароль</label>
+    </p-floatlabel>
+    @if (form.get('password')?.invalid && form.get('password')?.touched) {
+      <p-message severity="error" variant="simple" size="small">{{
+        getErrorMessage(form.get('password'))
+      }}</p-message>
+    }
+    <p-button label="Войти" (onClick)="login()" [disabled]="form.invalid"></p-button>
   </form>
 </div>

@@ -1,5 +1,5 @@
 export interface Order {
-  id: number;
+  id: string;
   number: string;
   customerName: string;
   status: 'new' | 'processing';
@@ -31,4 +31,9 @@ export interface OrderFilter {
 export interface OrderSort {
   createdAt: 'asc' | 'desc' | null;
   total: 'asc' | 'desc' | null;
+}
+
+export interface Status {
+  name: string;
+  code: string;
 }

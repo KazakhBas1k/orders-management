@@ -1,0 +1,56 @@
+<h1>Создание заказа</h1>
+@if (orderForm) {
+  <form [formGroup]="orderForm">
+    <p-floatlabel variant="on">
+      <input pInputText type="text" formControlName="number" id="number" />
+      <label for="number">Номер</label>
+    </p-floatlabel>
+    <p-floatlabel variant="on">
+      <input pInputText type="text" formControlName="customerName" id="customerName" />
+      <label for="customerName">Клиент</label>
+    </p-floatlabel>
+    <p-floatlabel variant="on">
+      <p-select
+        [options]="statuses"
+        formControlName="status"
+        id="status"
+        optionLabel="name"
+        optionValue="code"
+        style="width: 200px"
+      />
+      <label for="status">Статус</label>
+    </p-floatlabel>
+
+    <p-floatlabel variant="on">
+      <input pInputText type="text" formControlName="total" readonly id="total" />
+      <label for="total">Итого</label>
+    </p-floatlabel>
+    <p-button label="Создать" (onClick)="create()" [disabled]="!orderForm.dirty" />
+    <p-button label="Добавить вешь" (onClick)="addItem()" severity="info" />
+  </form>
+  <div class="product_container">
+    <h2>Продукты</h2>
+    <p-table showGridlines stripedRows [value]="items()">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>№</th>
+          <th>Название</th>
+          <th>Количество</th>
+          <th>Цена за шт</th>
+          <th></th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item let-rowIndex="rowIndex">
+        <tr>
+          <td>{{ rowIndex + 1 }}</td>
+          <td>{{ getProductNameById(item.productId) }}</td>
+          <td>{{ item.qty }}</td>
+          <td>{{ item.price }} тг</td>
+          <th>
+            <p-button label="Убрать" (onClick)="removeItem(item.productId)" severity="danger" />
+          </th>
+        </tr>
+      </ng-template>
+    </p-table>
+  </div>
+}

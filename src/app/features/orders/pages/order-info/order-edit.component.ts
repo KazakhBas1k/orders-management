@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal, WritableSignal } from '@angular/core';
-import { Order, Product, ProductItem } from '@features/orders/models/order';
+import { Order, Product, ProductItem, Status } from '@features/orders/models/order';
 import { OrderService } from '@features/orders/services/order.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -10,22 +10,38 @@ import {
   Validators,
 } from '@angular/forms';
 import { ToastService } from '@shared/services/toast.service';
+import { InputText } from 'primeng/inputtext';
+import { FloatLabel } from 'primeng/floatlabel';
+import { Button } from 'primeng/button';
+import { Select } from 'primeng/select';
+import { statuses } from '@features/orders/constants/status';
+import { PrimeTemplate } from 'primeng/api';
+import { TableModule } from 'primeng/table';
+import { firstValueFrom } from 'rxjs';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ProductFormComponent } from '@features/orders/components/product-form/product-form.component';
 
 @Component({
   selector: 'app-order-info',
-  imports: [ReactiveFormsModule, FormsModule],
-  templateUrl: './order-info.html',
-  styleUrl: './order-info.scss',
+  imports: [
+    ReactiveFormsModule,
+    FormsModule,
+    InputText,
+    FloatLabel,
+    Button,
+    Select,
+    PrimeTemplate,
+    TableModule,
+  ],
+  templateUrl: './order-edit.component.html',
+  styleUrl: './order-edit.component.scss',
   standalone: true,
 })
-export class OrderInfo implements OnInit {
+export class OrderEdit implements OnInit {
   public orderForm!: FormGroup;
-  public itemForm!: FormGroup;
   public orderInfo: WritableSignal<Order | null> = signal<Order | null>(null);
   public items: WritableSignal<ProductItem[]> = signal<ProductItem[]>([]);
   public products: WritableSignal<Product[]> = signal<Product[]>([]);
-  public qty: number = 0;
-  public productId: string = '';
   public id: number = 0;
 
   private readonly orderService: OrderService = inject(OrderService);
@@ -33,6 +49,9 @@ export class OrderInfo implements OnInit {
   private readonly fb: FormBuilder = inject(FormBuilder);
   private readonly toastService: ToastService = inject(ToastService);
   private readonly router: Router = inject(Router);
+  private readonly dialogService: DialogService = inject(DialogService);
+
+  protected readonly statuses: Status[] = statuses;
 
   async ngOnInit(): Promise<void> {
     const id: string | null = this.route.snapshot.paramMap.get('id');
@@ -54,30 +73,30 @@ export class OrderInfo implements OnInit {
       status: [this.orderInfo()?.status ?? null, [Validators.required]],
       total: [this.orderInfo()?.total ?? null, [Validators.required]],
     });
-    this.itemForm = this.fb.group({
-      productId: [null, [Validators.required]],
-      qty: [null, [Validators.required]],
-    });
   }
 
-  public addItem(): void {
-    if (this.itemForm.invalid) {
-      this.toastService.add('Ошибка', 'Все поля должны быть заполнены', 'error');
-    } else {
-      this.items.update((items: ProductItem[]) => {
-        if (items.find((i) => i.productId === +this.productId)) {
+  public async addItem(): Promise<void> {
+    const form = this.dialogService.open(ProductFormComponent, {
+      header: 'Продукт',
+      modal: true,
+      dismissableMask: false,
+      focusOnShow: false,
+    });
+    if (form !== null) {
+      const product: ProductItem = (await firstValueFrom(form.onClose)) as ProductItem;
+      this.items.update((items: ProductItem[]): ProductItem[] => {
+        if (items.find((i) => i.productId === product.productId)) {
           return items.map((i) =>
-            i.productId === +this.productId ? { ...i, qty: i.qty + this.qty } : i,
+            i.productId === product.productId
+              ? {
+                  productId: i.productId,
+                  qty: i.qty + product.qty,
+                  price: i.price,
+                }
+              : i,
           );
         } else {
-          return [
-            ...items,
-            {
-              productId: +this.productId,
-              qty: this.qty,
-              price: this.products().find((p) => +p.id === +this.productId)?.price ?? 0,
-            },
-          ];
+          return [...items, product];
         }
       });
     }
@@ -90,15 +109,13 @@ export class OrderInfo implements OnInit {
   }
 
   public async save(): Promise<void> {
-    if (this.orderForm.invalid) {
-      this.toastService.add('Ошибка', 'Все поля должны быть заполнены', 'error');
-    } else {
-      await this.orderService.update(this.id, {
-        id: this.id,
-        ...this.orderForm.getRawValue(),
-        items: this.items(),
-      });
-    }
+    await this.orderService.update(this.id, {
+      id: this.id,
+      ...this.orderForm.getRawValue(),
+      items: this.items(),
+    });
+    this.toastService.add('Заказ', 'Успешно обновлен', 'default');
+    await this.router.navigate(['']);
   }
 
   public getProductNameById(id: number): string {
@@ -106,10 +123,12 @@ export class OrderInfo implements OnInit {
   }
 
   public calcTotal(): void {
+    this.orderForm.get('total')?.markAsDirty();
     this.orderForm.get('total')?.setValue(this.items().reduce((c, i) => i.price * i.qty + c, 0));
   }
 
   public async delete(): Promise<void> {
+    this.toastService.add('Заказ', 'Успешно удален', 'default');
     await this.orderService.delete(this.id);
     await this.router.navigate(['']);
   }

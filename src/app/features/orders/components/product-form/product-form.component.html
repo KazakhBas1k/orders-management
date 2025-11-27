@@ -1,0 +1,26 @@
+<form [formGroup]="form">
+  <p-floatlabel variant="on">
+    <p-select
+      [options]="products()"
+      formControlName="productId"
+      optionLabel="title"
+      optionValue="id"
+      id="productId"
+      style="width: 200px"
+      (onChange)="getPrice()"
+    />
+    <label for="productId">Продукт</label>
+  </p-floatlabel>
+  <p-floatlabel variant="on">
+    <input pInputText type="number" formControlName="price" id="price" readonly />
+    <label for="price">Цена за шт</label>
+  </p-floatlabel>
+  <p-floatlabel variant="on">
+    <input pInputText type="number" formControlName="qty" id="qty" />
+    <label for="qty">Количество</label>
+  </p-floatlabel>
+</form>
+<div class="actions">
+  <p-button label="Добавить" (onClick)="add()" [disabled]="form.invalid" severity="info" />
+  <p-button label="Закрыть" (onClick)="close()" severity="secondary"></p-button>
+</div>

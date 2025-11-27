@@ -6,13 +6,17 @@ export const orders_route: Routes = [
     loadComponent: () =>
       import('./orders/pages/orders/orders.component').then((c) => c.OrdersComponent),
   },
-  {
-    path: ':id',
-    loadComponent: () => import('./orders/pages/order-info/order-info').then((c) => c.OrderInfo),
-  },
+
   {
     path: 'create',
     loadComponent: () =>
-      import('./orders/pages/order-create/order-create').then((c) => c.OrderCreate),
+      import('./orders/pages/order-create/order-create.component').then(
+        (c) => c.OrderCreateComponent,
+      ),
+  },
+  {
+    path: ':id',
+    loadComponent: () =>
+      import('./orders/pages/order-info/order-edit.component').then((c) => c.OrderEdit),
   },
 ];
